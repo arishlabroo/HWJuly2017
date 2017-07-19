@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Conceirge\ConceirgeCommon\ConceirgeCommon.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="StructureMap" Version="4.5.*" />
+    <PackageReference Include="StructureMap.Microsoft.DependencyInjection" Version="1.3.*" />
+  </ItemGroup>
+
+</Project>
