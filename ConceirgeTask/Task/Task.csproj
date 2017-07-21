@@ -5,8 +5,9 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.3" />
     <PackageReference Include="AWSSDK.SQS" Version="3.3.2.7" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0-*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0-*" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Conceirge\ConceirgeCommon\ConceirgeCommon.csproj" />
