@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadencePlaceholderForDemo",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConceirgeTask", "ConceirgeTask", "{2A104E7E-ECE9-4F48-8647-D3E4C1BF60A1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Task", "ConceirgeTask\Task\Task.csproj", "{00AE3BCA-E292-4352-BE97-AC11ECB52690}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskClient", "ConceirgeTask\TaskClient\TaskClient.csproj", "{00AE3BCA-E292-4352-BE97-AC11ECB52690}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskApi", "ConceirgeTask\TaskApi\TaskApi.csproj", "{5E59B3A0-C7CB-4A63-A0A1-49C2284CB7E9}"
 EndProject
