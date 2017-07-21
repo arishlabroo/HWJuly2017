@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview2-final" />
     <PackageReference Include="StructureMap" Version="4.5.*" />
     <PackageReference Include="StructureMap.Microsoft.DependencyInjection" Version="1.3.*" />

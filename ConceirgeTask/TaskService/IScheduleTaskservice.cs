@@ -3,7 +3,7 @@ using TaskModel;
 
 namespace TaskService
 {
-    public interface IScheduleTaskservice
+    public interface IScheduleTaskService
     {
         Task Schedule(ScheduleTaskDto dto);
     }

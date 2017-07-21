@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using TaskCompositionRoot;
 
 namespace TaskApi
 {
@@ -18,25 +19,21 @@ namespace TaskApi
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             services.AddOptions();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            ConfigureIoc(services);
+            services.AddTransient<IServiceDependencyFactory, ServiceDependencyFactoryForWeb>();
+            return services.ComposeTaskService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
+            
             app.UseMvc();
-        }
-
-
-        private void ConfigureIoc(IServiceCollection services)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -7,5 +7,6 @@ namespace TaskEntity
         public int Id { get; set; }
         public string TaskType { get; set; }
         public DateTime When { get; set; }
+        public int BethId { get; set; }
     }
 }

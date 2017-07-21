@@ -8,7 +8,7 @@ namespace ConceirgeCommon
         bool EnableLogLevelOverride { get; set; }
         Environment Environment { get; set; }
         string RequestId { get; set; }
-        string SessionId { get; set; }
+        string SomeThingId { get; set; }
         Guid UserId { get; set; }
     }
 }

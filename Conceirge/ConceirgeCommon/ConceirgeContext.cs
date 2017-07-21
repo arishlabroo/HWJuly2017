@@ -4,7 +4,7 @@ namespace ConceirgeCommon
 {
     public enum Environment
     {
-        Dev,
+        Development,
         Staging,
         Test,
         Prod
@@ -13,25 +13,11 @@ namespace ConceirgeCommon
     public class ConceirgeContext : IConceirgeContext
     {
         public string RequestId { get; set; }
-        public string SessionId { get; set; }
+        public string SomeThingId { get; set; }
         public string ApplicationName { get; set; }
+        public string CorrelationId { get; set; }
         public bool EnableLogLevelOverride { get; set; }
         public Environment Environment { get; set; }
         public Guid UserId { get; set; }
-    }
-
-
-    public class ServiceRequest
-    {
-        public string RequestId { get; set; }
-        public string SessionId { get; set; }
-        public Guid UserId { get; set; }
-        public bool EnableLogLevelOverride { get; set; }
-    }
-
-    public class ServiceRequest<T> : ServiceRequest
-    {
-        public T Request { get; set; }
-
     }
 }
