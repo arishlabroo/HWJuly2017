@@ -1,22 +1,17 @@
-﻿using Amazon.SQS;
-using ConceirgeCommon;
-using Microsoft.Extensions.Logging;
+﻿using ConceirgeCommon;
+using ConceirgeCommon.Queue;
 using TaskModel;
 
 namespace TaskClient
 {
-    public class ScheduleTaskQueue : ConceirgeQueue<ServiceRequest<ScheduleTaskDto>>
+    public class ScheduleTaskQueue : ConceirgeQueueClientBase<ServiceRequest<ScheduleTaskDto>>
     {
-        private readonly IMapper<SowResponse, ServiceResponse> _responseMapper;
-
-        protected ScheduleTaskQueue(
-            IAmazonSQS sqsClient,
-            IJsonMessageFormatter<ServiceRequest<ScheduleTaskDto>> formatter,
-            ILogger<ScheduleTaskQueue> logger)
-            : base(sqsClient, formatter, logger)
+        public ScheduleTaskQueue(IConceirgeQueueFactory sqsQueueFactory)
+            : base(sqsQueueFactory)
         {
         }
 
-        protected override string QueueName => "TestHW2017";
+        protected override sealed string QueueName => "TestHW2017";
+        //Queue name is abstract, hence required. Other params are virtual with some defaults. You can override them here too.
     }
 }

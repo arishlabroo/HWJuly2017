@@ -1,42 +1,47 @@
 ﻿using Amazon.SQS;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using Amazon.SQS.Model;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Net;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
-namespace TaskClient
+namespace ConceirgeCommon.Queue
 {
-    public abstract class ConceirgeQueue<T> : IReaper<T>, ISower<T>
+    public class ConceirgeQueue<T> : IQueue<T>
     {
         //We should definately implement a circuit breaker here.
 
+        private readonly ConceirgeQueueInfo _queueInfo;
         private readonly IAmazonSQS _sqsClient;
         private readonly IMessageFormatter<T> _formatter;
+        private readonly IConceirgeQueueItemBuilder<T> _queueItemBuilder;
         private readonly ILogger<ConceirgeQueue<T>> _logger;
+
         private readonly ConcurrentQueue<ConciergeQueueItem<T>> _buffer = new ConcurrentQueue<ConciergeQueueItem<T>>();
 
-        protected abstract string QueueName { get; }
-
-        protected virtual int DelaySeconds => 0;
-        protected virtual int WaitTimeSeconds => 5;
-        protected virtual int VisibilityTimeoutSeconds => 30;
-        protected virtual int MaxNumberOfMessages => 3;
 
         private string _queueUrl;
 
         protected ConceirgeQueue(
+            ConceirgeQueueInfo queueInfo,
             IAmazonSQS sqsClient,
             IMessageFormatter<T> formatter,
-           
+            IConceirgeQueueItemBuilder<T> queueItemBuilder,
             ILogger<ConceirgeQueue<T>> logger)
         {
+            _queueInfo = queueInfo;
             _sqsClient = sqsClient;
             _formatter = formatter;
+            _queueItemBuilder = queueItemBuilder;
             _logger = logger;
+
+            if (string.IsNullOrWhiteSpace(_queueInfo?.QueueName))
+            {
+                throw new InvalidOperationException("Cannot instantiate a Sqs Queue without a queue name");
+            }
         }
 
         public async Task<SowResponse> Sow(T message)
@@ -47,7 +52,7 @@ namespace TaskClient
 
             var sendMessageRequest = new SendMessageRequest
             {
-                DelaySeconds = DelaySeconds,
+                DelaySeconds = _queueInfo.DelaySeconds,
                 QueueUrl = queueUrl,
                 MessageBody = messageBody
             };
@@ -88,14 +93,13 @@ namespace TaskClient
             var items = new List<ConciergeQueueItem<T>>();
 
             int i = 0;
-            while (i < MaxNumberOfMessages && _buffer.TryDequeue(out var item))
+            while (i < _queueInfo.MaxNumberOfMessages && _buffer.TryDequeue(out var item))
             {
                 items.Add(item);
                 i++;
             }
             return items;
         }
-
 
         private async Task BuildBuffer()
         {
@@ -105,15 +109,19 @@ namespace TaskClient
             var recieveMessageRequest = new ReceiveMessageRequest
             {
                 QueueUrl = queueUrl,
-                MaxNumberOfMessages = MaxNumberOfMessages,
-                VisibilityTimeout = VisibilityTimeoutSeconds,
-                WaitTimeSeconds = WaitTimeSeconds,
+                MaxNumberOfMessages = _queueInfo.MaxNumberOfMessages,
+                VisibilityTimeout = _queueInfo.VisibilityTimeoutSeconds,
+                WaitTimeSeconds = _queueInfo.WaitTimeSeconds,
                 //AttributeNames = attributeNames
             };
 
             try
             {
                 var recieveMessageResponse = await _sqsClient.ReceiveMessageAsync(recieveMessageRequest);
+                if ((recieveMessageResponse?.HttpStatusCode == HttpStatusCode.OK) && (recieveMessageResponse.Messages.Count > 0))
+                {
+                    await Task.WhenAll(recieveMessageResponse.Messages.Select(AddToBuffer));
+                }
             }
             catch (Exception e)
             {
@@ -121,12 +129,28 @@ namespace TaskClient
             }
         }
 
+        private async Task AddToBuffer(Message message)
+        {
+            if (string.IsNullOrWhiteSpace(message?.MessageId)) return;
+            var queueUrl = await GetQueueUrl();
+
+            var info = new ConceirgeQueueItemInfo
+            {
+                Body = message.Body,
+                QueueUrl = queueUrl,
+                ReceiptHandle = message.ReceiptHandle,
+                MessageId = message.MessageId,
+            };
+
+            _buffer.Enqueue(_queueItemBuilder.Build(info));
+        }
+
         protected async ValueTask<string> GetQueueUrl()
         {
-            if (string.IsNullOrWhiteSpace(QueueName))
+            if (string.IsNullOrWhiteSpace(_queueInfo.QueueName))
             {
                 _logger.LogError("You need to think what you are doing with your life");
-                throw new ArgumentException("QueueName is required to get queue url", nameof(QueueName));
+                throw new ArgumentException("QueueName is required to get queue url", nameof(_queueInfo.QueueName));
             }
 
             if (string.IsNullOrWhiteSpace(_queueUrl))
@@ -135,7 +159,7 @@ namespace TaskClient
                 {
                     //Do i need to lock here?
                     //We should circuit break here too.
-                    var response = await _sqsClient.GetQueueUrlAsync(QueueName);
+                    var response = await _sqsClient.GetQueueUrlAsync(_queueInfo.QueueName);
                     _logger.LogInformation("Get queue url response {@response}", response);
 
                     if (string.IsNullOrWhiteSpace(_queueUrl))
@@ -145,35 +169,35 @@ namespace TaskClient
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Attempt to get QueueUrl for {queueName} threw exception", QueueName);
+                    _logger.LogError(e, "Attempt to get QueueUrl for {queueName} threw exception", _queueInfo.QueueName);
                 }
             }
 
             if (string.IsNullOrWhiteSpace(_queueUrl))
             {
-                _logger.LogError("Could not get QueueUrl for {QueueName}", QueueName);
+                _logger.LogError("Could not get QueueUrl for {QueueName}", _queueInfo.QueueName);
             }
 
             return _queueUrl;
         }
     }
 
-
-    public interface IReaper<T>
+    public class ConceirgeQueueInfo
     {
-        Task<ConciergeQueueItem<T>> Reap();
-        Task<IEnumerable<ConciergeQueueItem<T>>> ReapMany();
+        public ConceirgeQueueInfo(string queueName)
+        {
+            QueueName = queueName;
+        }
+
+        public string QueueName { get; }
+        public int DelaySeconds { get; set; } = 0;
+        public int WaitTimeSeconds { get; set; } = 5;
+        public int VisibilityTimeoutSeconds { get; set; } = 30;
+        public int MaxNumberOfMessages { get; set; } = 3;
     }
 
-    public interface ISower<T>
+    public interface IConceirgeQueueFactory
     {
-        Task<SowResponse> Sow(T message);
-    }
-
-    public class SowResponse
-    {
-        public HttpStatusCode StatusCode { get; set; }
-        public string MessageId { get; set; }
-        public string Message { get; set; }
+        ConceirgeQueue<T> Create<T>(ConceirgeQueueInfo queueInfo);
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-
-namespace TaskClient
+namespace ConceirgeCommon
 {
     public static class ServiceExtensions
     {

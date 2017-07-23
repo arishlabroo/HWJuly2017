@@ -1,19 +1,15 @@
 ﻿using Newtonsoft.Json;
 
-namespace TaskClient
+namespace ConceirgeCommon.Queue
 {
-
     public interface IMessageFormatter<T>
     {
         string Serialize(T input);
 
-        T Serialize(string message);
+        T DeSerialize(string message);
     }
 
-    public interface IJsonMessageFormatter<T> : IMessageFormatter<T> { }
-    public interface IProtoMessageFormatter<T> : IMessageFormatter<T> { }
-
-    public class JsonMessageFormatter<T> : IJsonMessageFormatter<T>
+    public class JsonMessageFormatter<T> : IMessageFormatter<T>
     {
         //private static JsonSerializerSettings settings = new JsonSerializerSettings() { };
 
@@ -22,7 +18,7 @@ namespace TaskClient
             return JsonConvert.SerializeObject(input);
         }
 
-        public T Serialize(string message)
+        public T DeSerialize(string message)
         {
             return JsonConvert.DeserializeObject<T>(message);
         }
