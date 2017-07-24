@@ -16,7 +16,9 @@ namespace TaskClient
         private readonly ISower<ServiceRequest<ScheduleTaskDto>> _sower;
         private readonly IMapper<SowResponse, ServiceResponse> _sowResponseMapper;
 
-        public ScheduleTaskQueueClient(ISower<ServiceRequest<ScheduleTaskDto>> sower, IMapper<SowResponse, ServiceResponse> sowResponseMapper)
+        public ScheduleTaskQueueClient(
+            ISower<ServiceRequest<ScheduleTaskDto>> sower,
+            IMapper<SowResponse, ServiceResponse> sowResponseMapper)
         {
             _sower = sower;
             _sowResponseMapper = sowResponseMapper;

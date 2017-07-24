@@ -6,7 +6,7 @@ namespace ConceirgeCommon.Queue
     public abstract class ConceirgeQueueClientBase<T> : IQueue<T>
     {
         private readonly IConceirgeQueueFactory _sqsQueueFactory;
-        private IQueue<T> _queue;
+        private IConceirgeQueue<T> _queue;
 
         protected abstract string QueueName { get; }
         protected virtual int DelaySeconds => 0;
@@ -34,11 +34,11 @@ namespace ConceirgeCommon.Queue
             return GetQueue().Sow(message);
         }
 
-        private IQueue<T> GetQueue()
+        private IConceirgeQueue<T> GetQueue()
         {
             if (_queue == null)
             {
-                var info = new ConceirgeQueueInfo(QueueName)
+                var conceirgeQueueInfo = new ConceirgeQueueInfo(QueueName)
                 {
                     DelaySeconds = DelaySeconds,
                     MaxNumberOfMessages = MaxNumberOfMessages,
@@ -46,7 +46,7 @@ namespace ConceirgeCommon.Queue
                     WaitTimeSeconds = WaitTimeSeconds
                 };
 
-                _queue = _sqsQueueFactory.Create<T>(info);
+                _queue = _sqsQueueFactory.Create<T>(conceirgeQueueInfo);
             }
 
             return _queue;

@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace ConceirgeCommon.Queue
 {
-    public class ConceirgeQueue<T> : IQueue<T>
+    public interface IConceirgeQueue<T> : IQueue<T> { };
+    public class ConceirgeQueue<T> : IConceirgeQueue<T>
     {
         //We should definately implement a circuit breaker here.
 
@@ -25,14 +26,14 @@ namespace ConceirgeCommon.Queue
 
         private string _queueUrl;
 
-        protected ConceirgeQueue(
-            ConceirgeQueueInfo queueInfo,
+        public ConceirgeQueue(
+            ConceirgeQueueInfo conceirgeQueueInfo,
             IAmazonSQS sqsClient,
             IMessageFormatter<T> formatter,
             IConceirgeQueueItemBuilder<T> queueItemBuilder,
             ILogger<ConceirgeQueue<T>> logger)
         {
-            _queueInfo = queueInfo;
+            _queueInfo = conceirgeQueueInfo;
             _sqsClient = sqsClient;
             _formatter = formatter;
             _queueItemBuilder = queueItemBuilder;
@@ -198,6 +199,6 @@ namespace ConceirgeCommon.Queue
 
     public interface IConceirgeQueueFactory
     {
-        ConceirgeQueue<T> Create<T>(ConceirgeQueueInfo queueInfo);
+        IConceirgeQueue<T> Create<T>(ConceirgeQueueInfo conceirgeQueueInfo);
     }
 }

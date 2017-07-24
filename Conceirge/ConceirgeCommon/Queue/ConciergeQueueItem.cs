@@ -8,21 +8,21 @@ namespace ConceirgeCommon.Queue
     {
         private bool _disposedValue = false; // To detect redundant calls
 
-        private readonly IConciergeQueueItemCleaner<T> _cleaner;
+        private readonly IConceirgeQueueItemCleaner<T> _cleaner;
+
+        private readonly ConceirgeQueueItemInfo _itemInfo;
 
         public bool Retry { get; set; }
 
         public T Item { get; }
 
-        ConceirgeQueueItemInfo ItemInfo { get; }
-
         public ConciergeQueueItem(
             T item,
             ConceirgeQueueItemInfo itemInfo,
-            IConciergeQueueItemCleaner<T> cleaner)
+            IConceirgeQueueItemCleaner<T> cleaner)
         {
             Item = item;
-            ItemInfo = itemInfo;
+            _itemInfo = itemInfo;
             _cleaner = cleaner;
         }
 
@@ -34,7 +34,7 @@ namespace ConceirgeCommon.Queue
                 {
                     if (!Retry)
                     {
-                        _cleaner.Clean(ItemInfo);
+                        _cleaner.Clean(_itemInfo);
                     }
                 }
                 _disposedValue = true;
@@ -53,5 +53,6 @@ namespace ConceirgeCommon.Queue
         public string QueueUrl { get; set; }
         public string ReceiptHandle { get; set; }
         public string MessageId { get; set; }
+        public bool AttemptedDelete { get; set; }
     }
 }

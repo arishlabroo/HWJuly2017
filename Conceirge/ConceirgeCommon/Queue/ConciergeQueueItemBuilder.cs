@@ -10,16 +10,16 @@ namespace ConceirgeCommon.Queue
 
     //Deserializes the message into a T 
     //and then wraps the T into a disposable conceirge queue item
-    public class ConciergeQueueItemBuilder<T> : IConceirgeQueueItemBuilder<T>
+    public class ConceirgeQueueItemBuilder<T> : IConceirgeQueueItemBuilder<T>
     {
         private readonly IMessageFormatter<T> _formatter;
-        private readonly ILogger<ConciergeQueueItemBuilder<T>> _logger;
-        private readonly IConciergeQueueItemCleaner<T> _cleaner;
+        private readonly ILogger<ConceirgeQueueItemBuilder<T>> _logger;
+        private readonly IConceirgeQueueItemCleaner<T> _cleaner;
 
-        public ConciergeQueueItemBuilder(
+        public ConceirgeQueueItemBuilder(
             IMessageFormatter<T> formatter,
-            IConciergeQueueItemCleaner<T> cleaner,
-            ILogger<ConciergeQueueItemBuilder<T>> logger)
+            IConceirgeQueueItemCleaner<T> cleaner,
+            ILogger<ConceirgeQueueItemBuilder<T>> logger)
         {
             _formatter = formatter;
             _cleaner = cleaner;

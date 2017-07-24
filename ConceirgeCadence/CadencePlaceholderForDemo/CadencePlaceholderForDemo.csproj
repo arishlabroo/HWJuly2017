@@ -11,10 +11,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="structuremap" Version="4.5.1" />
+    <PackageReference Include="StructureMap.Microsoft.DependencyInjection" Version="1.3.*" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0-preview2-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConceirgeTask\TaskClient\TaskClient.csproj" />
   </ItemGroup>
 
 </Project>
