@@ -46,6 +46,7 @@ namespace ConceirgeCommon.Queue
                     WaitTimeSeconds = WaitTimeSeconds
                 };
 
+                //If required create a client here and pass it to the below factory so that we can right to other peoples queues.
                 _queue = _sqsQueueFactory.Create<T>(conceirgeQueueInfo);
             }
 

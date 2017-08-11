@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ConceirgeCommon.Queue
 {
@@ -38,11 +39,15 @@ namespace ConceirgeCommon.Queue
             _formatter = formatter;
             _queueItemBuilder = queueItemBuilder;
             _logger = logger;
+            
 
             if (string.IsNullOrWhiteSpace(_queueInfo?.QueueName))
             {
                 throw new InvalidOperationException("Cannot instantiate a Sqs Queue without a queue name");
             }
+            //Console.WriteLine("apple"+_sqsClient.Config.ServiceURL);
+
+
         }
 
         public async Task<SowResponse> Sow(T message)
@@ -106,6 +111,7 @@ namespace ConceirgeCommon.Queue
         {
             var queueUrl = await GetQueueUrl();
             if (string.IsNullOrWhiteSpace(queueUrl)) return;
+            //Console.WriteLine(queueUrl);
 
             var recieveMessageRequest = new ReceiveMessageRequest
             {
@@ -148,6 +154,8 @@ namespace ConceirgeCommon.Queue
 
         protected async ValueTask<string> GetQueueUrl()
         {
+            var x = Path.GetDirectoryName(typeof(Amazon.Internal.RegionEndpointV3).Assembly.Location) ;
+            //Console.WriteLine(x);
             if (string.IsNullOrWhiteSpace(_queueInfo.QueueName))
             {
                 _logger.LogError("You need to think what you are doing with your life");
@@ -158,9 +166,14 @@ namespace ConceirgeCommon.Queue
             {
                 try
                 {
+            //Console.WriteLine(_queueInfo.QueueName);
                     //Do i need to lock here?
                     //We should circuit break here too.
+                    //var xx = await _sqsClient.ListQueuesAsync("T");
+                    //Console.WriteLine(xx?.QueueUrls?.Count);
                     var response = await _sqsClient.GetQueueUrlAsync(_queueInfo.QueueName);
+                    
+            //Console.WriteLine(response.HttpStatusCode);
                     _logger.LogInformation("Get queue url response {@response}", response);
 
                     if (string.IsNullOrWhiteSpace(_queueUrl))
@@ -170,6 +183,9 @@ namespace ConceirgeCommon.Queue
                 }
                 catch (Exception e)
                 {
+            Console.WriteLine(e.Message);
+
+            //Console.WriteLine(e.Data.Values);
                     _logger.LogError(e, "Attempt to get QueueUrl for {queueName} threw exception", _queueInfo.QueueName);
                 }
             }
@@ -178,8 +194,10 @@ namespace ConceirgeCommon.Queue
             {
                 _logger.LogError("Could not get QueueUrl for {QueueName}", _queueInfo.QueueName);
             }
+            Console.WriteLine("uuuuuKIO"+_queueUrl);
 
-            return _queueUrl;
+            //return _queueUrl;
+            return "http://localhost:4576/123456789012/TestHW2017";
         }
     }
 

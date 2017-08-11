@@ -8,11 +8,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
     <PackageReference Include="structuremap" Version="4.5.1" />
-    <!--<PackageReference Include="structuremap.autofactory" Version="1.0.1" />-->
+    <PackageReference Include="structuremap.autofactory" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Conceirge\ConceirgeCommon\ConceirgeCommon.csproj" />
-    <ProjectReference Include="..\StructureMap.AutoFactory\StructureMap.AutoFactory.csproj" />
+    <!-- <ProjectReference Include="..\StructureMap.AutoFactory\StructureMap.AutoFactory.csproj" /> -->
     <ProjectReference Include="..\TaskModel\TaskModel.csproj" />
   </ItemGroup>
 </Project>

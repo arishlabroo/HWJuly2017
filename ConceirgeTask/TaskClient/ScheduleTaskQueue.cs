@@ -12,6 +12,7 @@ namespace TaskClient
         }
 
         protected override sealed string QueueName => "TestHW2017";
+        protected override int MaxNumberOfMessages => 1;
         //Queue name is abstract, hence required. Other params are virtual with some defaults. You can override them here too.
     }
 }

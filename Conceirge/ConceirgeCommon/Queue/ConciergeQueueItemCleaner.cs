@@ -148,6 +148,7 @@ namespace ConceirgeCommon.Queue
             try
             {
                 deleteMessageBatchResponse = await _sqsClient.DeleteMessageBatchAsync(r);
+                Console.WriteLine("boom");
             }
             catch (Exception e)
             {

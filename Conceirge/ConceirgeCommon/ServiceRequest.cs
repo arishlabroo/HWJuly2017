@@ -30,4 +30,8 @@ namespace ConceirgeCommon
     {
         public T Response { get; set; }
     }
+
+    public interface IContextClosingDependencyProvider{
+        T Provide<T>(ServiceRequest serviceRequest);
+    }
 }
